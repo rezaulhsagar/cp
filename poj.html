@@ -44,6 +44,138 @@ Released   : 20120528
 		<div id="page-bgtop">
 			<div id="page-bgbtm">
 				<div id="content">
+					<!-- post -->
+					
+					<div class="post">
+						<h2 class="title">POJ 1039 - Pipe</h2>
+						<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
+						<div class="entry">
+							<p class="links"><a href="http://poj.org/problem?id=1039" target="_blank">প্রবলেম লিংক</a></p>
+							<p>পাইপের বেন্ড বা বাঁকের শুরু আর শেষ, অর্থাৎ (x, y) আর (x, y - 1) সেগমেন্ট গুলা নিতে হবে। এখন যদি একটা সরলরেখা সবগুলা সেগমেন্ট কে ছেদ করে তাইলে তো পুরো পাইপটা দিয়ে লাইট  পাস করতে পারবে। আর যদি না হয় তাইলে শুরু থেকে যে সেগমেন্ট এ ছেদ করবে না, তার ঠিক আগের অংশেই পাইপের উপরের অথবা নিচের কোন এক জায়গা দিয়ে রেখা ছেদ করবে। এখন কথা হচ্ছে, রেখা আমরা কই থেকে পাবো? একটু চিন্তা করলে দেখা যাবে, লাইট কিন্তু সবসময় বাঁকের মধ্যে বাধা পাবে। তো এইখানে সবরকম উপায়ে সেই সেগমেন্টগুলো দিয়ে সরলরেখা বানাতে হবে।</p>
+							<div>
+							<button class = "button" onclick="p1039()">কোড</button>
+							<div id="p1039" style="display:none">
+							
+							<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #557799">#include &lt;algorithm&gt;</span>
+<span style="color: #557799">#include &lt;cassert&gt;</span>
+<span style="color: #557799">#include &lt;cmath&gt;</span>
+<span style="color: #557799">#include &lt;cstdio&gt;</span>
+<span style="color: #557799">#include &lt;cstring&gt;</span>
+<span style="color: #557799">#include &lt;iostream&gt;</span>
+<span style="color: #557799">#include &lt;queue&gt;</span>
+<span style="color: #557799">#include &lt;sstream&gt;</span>
+<span style="color: #557799">#include &lt;vector&gt;</span>
+
+<span style="color: #557799">#define filein freopen (&quot;in.txt&quot;, &quot;r&quot;, stdin)</span>
+<span style="color: #557799">#define fileout freopen (&quot;out.txt&quot;, &quot;w&quot;, stdout)</span>
+<span style="color: #557799">#define dbg(x) cerr &lt;&lt; #x &lt;&lt; &quot;: &quot; &lt;&lt; x &lt;&lt; endl</span>
+
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #008800; font-weight: bold">namespace</span> std;
+<span style="color: #008800; font-weight: bold">typedef</span> <span style="color: #333399; font-weight: bold">long</span> <span style="color: #333399; font-weight: bold">long</span> ll;
+
+<span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">int</span> maxn <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">22</span>;
+<span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">double</span> eps <span style="color: #333333">=</span> <span style="color: #6600EE; font-weight: bold">1e-8</span>;
+
+<span style="color: #008800; font-weight: bold">struct</span> pt{
+    <span style="color: #333399; font-weight: bold">double</span> x, y;
+    pt(){}
+    pt(<span style="color: #333399; font-weight: bold">double</span> a, <span style="color: #333399; font-weight: bold">double</span> b){
+        x <span style="color: #333333">=</span> a; y <span style="color: #333333">=</span> b;
+    }
+    <span style="color: #333399; font-weight: bold">void</span> get(){
+        scanf (<span style="background-color: #fff0f0">&quot;%lf %lf&quot;</span>, <span style="color: #333333">&amp;</span>x, <span style="color: #333333">&amp;</span>y);
+    }
+};
+
+<span style="color: #008800; font-weight: bold">struct</span> line{
+    <span style="color: #333399; font-weight: bold">double</span> a, b, c;
+    line (){}
+    line (pt p, pt q){
+        a <span style="color: #333333">=</span> p.y <span style="color: #333333">-</span> q.y;
+        b <span style="color: #333333">=</span> q.x <span style="color: #333333">-</span> p.x;
+        c <span style="color: #333333">=</span> <span style="color: #333333">-</span>a <span style="color: #333333">*</span> p.x <span style="color: #333333">-</span> b <span style="color: #333333">*</span> p.y;
+    }
+    <span style="color: #333399; font-weight: bold">double</span> side (<span style="color: #008800; font-weight: bold">const</span> pt <span style="color: #333333">&amp;</span>p){
+        <span style="color: #008800; font-weight: bold">return</span> a <span style="color: #333333">*</span> p.x <span style="color: #333333">+</span> b <span style="color: #333333">*</span> p.y <span style="color: #333333">+</span> c;
+    }
+    <span style="color: #333399; font-weight: bold">bool</span> parallel (<span style="color: #008800; font-weight: bold">const</span> line <span style="color: #333333">&amp;</span>other){
+        <span style="color: #008800; font-weight: bold">return</span> fabs (a <span style="color: #333333">*</span> other.b <span style="color: #333333">-</span> b <span style="color: #333333">*</span> other.a) <span style="color: #333333">&lt;</span> eps;
+    }
+    pt intersect (<span style="color: #008800; font-weight: bold">const</span> line <span style="color: #333333">&amp;</span>other){
+        <span style="color: #333399; font-weight: bold">double</span> d <span style="color: #333333">=</span> a <span style="color: #333333">*</span> other.b <span style="color: #333333">-</span> b <span style="color: #333333">*</span> other.a;
+        <span style="color: #333399; font-weight: bold">double</span> dx <span style="color: #333333">=</span> b <span style="color: #333333">*</span> other.c <span style="color: #333333">-</span> c <span style="color: #333333">*</span> other.b;
+        <span style="color: #333399; font-weight: bold">double</span> dy <span style="color: #333333">=</span> c <span style="color: #333333">*</span> other.a <span style="color: #333333">-</span> a <span style="color: #333333">*</span> other.c;
+        <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0066BB; font-weight: bold">pt</span> (dx <span style="color: #333333">/</span> d, dy <span style="color: #333333">/</span> d);
+    }
+};
+
+pt a[maxn], b[maxn];
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">main</span> (){
+<span style="color: #888888">//    filein;</span>
+    <span style="color: #333399; font-weight: bold">int</span> n;
+    <span style="color: #008800; font-weight: bold">while</span> (<span style="color: #333333">~</span>scanf (<span style="background-color: #fff0f0">&quot;%d&quot;</span>, <span style="color: #333333">&amp;</span>n) and n){
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> n; i<span style="color: #333333">++</span>){
+            a[i].get();
+            b[i] <span style="color: #333333">=</span> pt (a[i].x, a[i].y <span style="color: #333333">-</span> <span style="color: #6600EE; font-weight: bold">1.0</span>);
+        }
+        <span style="color: #333399; font-weight: bold">bool</span> through <span style="color: #333333">=</span> <span style="color: #007020">false</span>;
+        <span style="color: #333399; font-weight: bold">double</span> maxi <span style="color: #333333">=</span> a[<span style="color: #0000DD; font-weight: bold">0</span>].x;
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> n and <span style="color: #333333">!</span>through; i<span style="color: #333333">++</span>){
+            <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> j <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; j <span style="color: #333333">&lt;</span> n; j<span style="color: #333333">++</span>){
+                <span style="color: #008800; font-weight: bold">if</span> (i <span style="color: #333333">==</span> j) <span style="color: #008800; font-weight: bold">continue</span>;
+                line L (a[i], b[j]);
+                <span style="color: #333399; font-weight: bold">int</span> k;
+                <span style="color: #008800; font-weight: bold">for</span> (k <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; k <span style="color: #333333">&lt;</span> n; k<span style="color: #333333">++</span>){
+                    <span style="color: #008800; font-weight: bold">if</span> (L.side (a[k]) <span style="color: #333333">*</span> L.side (b[k]) <span style="color: #333333">&gt;</span> eps)
+                        <span style="color: #008800; font-weight: bold">break</span>;
+                }
+                <span style="color: #008800; font-weight: bold">if</span> (k <span style="color: #333333">==</span> n){
+                    through <span style="color: #333333">=</span> <span style="color: #007020">true</span>;
+                    <span style="color: #008800; font-weight: bold">break</span>;
+                }
+                <span style="color: #008800; font-weight: bold">if</span> (k){
+                    pt out;
+                    <span style="color: #008800; font-weight: bold">if</span> (L.side (a[k]) <span style="color: #333333">*</span> L.side (a[k <span style="color: #333333">-</span> <span style="color: #0000DD; font-weight: bold">1</span>]) <span style="color: #333333">&lt;</span> eps){
+                        out <span style="color: #333333">=</span> L.intersect (line (a[k], a[k <span style="color: #333333">-</span> <span style="color: #0000DD; font-weight: bold">1</span>]));
+                        maxi <span style="color: #333333">=</span> max (maxi, out.x);
+                    }
+                    <span style="color: #008800; font-weight: bold">if</span> (L.side (b[k]) <span style="color: #333333">*</span> L.side (b[k <span style="color: #333333">-</span> <span style="color: #0000DD; font-weight: bold">1</span>]) <span style="color: #333333">&lt;</span> eps){
+                        out <span style="color: #333333">=</span> L.intersect (line (b[k], b[k <span style="color: #333333">-</span> <span style="color: #0000DD; font-weight: bold">1</span>]));
+                        maxi <span style="color: #333333">=</span> max (maxi, out.x);
+                    }
+                }
+            }
+        }
+        <span style="color: #008800; font-weight: bold">if</span> (through) puts (<span style="background-color: #fff0f0">&quot;Through all the pipe.&quot;</span>);
+        <span style="color: #008800; font-weight: bold">else</span> printf (<span style="background-color: #fff0f0">&quot;%.2f</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>, maxi);
+    }
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+}
+</pre></div>
+
+
+							</div>
+							<script>
+							show = false;
+							function p1039() {
+								show = !show;
+								if (show)
+									document.getElementById('p1039').style.display = "block";
+								else
+									document.getElementById('p1039').style.display = "none";
+							}
+							</script>
+							</div>
+						</div>
+					</div>
+				<!--paste code up -->
+				<!--paste code up -->
+				<!--paste code up -->
+				<!--paste code up -->
+				
+					<!-- post -->
+				
 					<div class="post">
 						<h2 class="title">POJ 1066 - Treasure Hunt</h2>
 						<p class="meta"><span class="date">১৬ মে, ২০১৯</span></p>
@@ -51,7 +183,7 @@ Released   : 20120528
 							<p class="links"><a href="http://poj.org/problem?id=1066" target="_blank">প্রবলেম লিংক</a></p>
 							<p>এই প্রবলেমটা খুব সুন্দর। দেখতে অনেক কঠিন লাগে। বিএফএস-বিএফএস মনে হয়। আসলে তা না। আমরা জানি একটা সরলরেখার উপরের বিন্দু সেই রেখাকে সিদ্ধ করে। কিন্তু সেই রেখার ডানে বা বামে যদি কোন বিন্দু নেই, তাইলে সেটা সমীকরণ সিদ্ধ করে না।  তো একটা বিন্দু যদি সরলরেখাকে ছেদ না করে, তাইলে সেটা সমীকরণে বসালে পজেটিভ অথবা নেগেটিভ মান দিবে। আমরা জানি, সরলরেখা একটা তল কে দুই ভাগে ভাগ করে। এক ভাগের সকল বিন্দু সমীকরণে একই চিহ্নযুক্ত মান দেয়। এখন প্রবলেমে বলসে, আমরা কেমনে লাইনগুলা পার হয়ে বর্ডারে যাইতে পারি। তো আমরা করবো কি, সবগুলা বর্ডারের পয়েন্ট নিবো, নিয়ে দেখবো যে এইটার জন্য আমার শুরুর পয়েন্টে যাইতে কয়টা লাইন পার হওয়া লাগে। মানে ইনিশিয়াল পয়েন্ট আর বর্ডার পয়েন্ট যদি একই চিহ্ন দেয় তাইলে তারা একই সাইডে। যদি না দেয় তাইলে এটা পার হওয়া লাগবে।</p>
 							<div>
-							<button class = "button" onclick="toggle()">কোড</button>
+							<button class = "button" onclick="p1066()">কোড</button>
 							<div id="p1066" style="display:none">
 							<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #557799">#include &lt;algorithm&gt;</span>
 <span style="color: #557799">#include &lt;cassert&gt;</span>
@@ -153,13 +285,12 @@ line lines[maxn];
 							</div>
 							<script>
 							show = false;
-							codeElem = document.getElementById('p1066');
-							function toggle() {
+							function p1066() {
 								show = !show;
 								if (show)
-									codeElem.style.display = "block";
+									document.getElementById('p1066').style.display = "block";
 								else
-									codeElem.style.display = "none";
+									document.getElementById('p1066').style.display = "none";
 							}
 							</script>
 							</div>
