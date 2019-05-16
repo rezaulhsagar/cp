@@ -617,6 +617,272 @@ pt a[maxn], hull[maxn];
 </div>
 					<!-- post -->
 					<div class="post">
+	<h2 class="title">POJ 3130 - How I Mathematician Wonder What You Are!</h2>
+	<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
+	<div class="entry">
+		<p class="links"><a href="http://poj.org/problem?id=3130" target="_blank">প্রবলেম লিংক</a></p>
+		<p>POJ 3335 এর মত। হাফ-প্লেন ইন্টারসেকশন।</p>
+		<div>
+		<button class = "button" onclick="p3130()">কোড</button>
+		<div id="p3130" style="display:none"><!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #557799">#include &lt;algorithm&gt;</span>
+<span style="color: #557799">#include &lt;cassert&gt;</span>
+<span style="color: #557799">#include &lt;cmath&gt;</span>
+<span style="color: #557799">#include &lt;cstdio&gt;</span>
+<span style="color: #557799">#include &lt;cstring&gt;</span>
+<span style="color: #557799">#include &lt;iostream&gt;</span>
+<span style="color: #557799">#include &lt;queue&gt;</span>
+<span style="color: #557799">#include &lt;sstream&gt;</span>
+<span style="color: #557799">#include &lt;vector&gt;</span>
+
+<span style="color: #557799">#define filein freopen (&quot;in.txt&quot;, &quot;r&quot;, stdin)</span>
+<span style="color: #557799">#define fileout freopen (&quot;out.txt&quot;, &quot;w&quot;, stdout)</span>
+<span style="color: #557799">#define dbg(x) cerr &lt;&lt; #x &lt;&lt; &quot;: &quot; &lt;&lt; x &lt;&lt; endl</span>
+
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #008800; font-weight: bold">namespace</span> std;
+<span style="color: #008800; font-weight: bold">typedef</span> <span style="color: #333399; font-weight: bold">long</span> <span style="color: #333399; font-weight: bold">long</span> ll;
+
+<span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">int</span> maxn <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">102</span>;
+<span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">double</span> eps <span style="color: #333333">=</span> <span style="color: #6600EE; font-weight: bold">1e-6</span> ;
+
+<span style="color: #008800; font-weight: bold">struct</span> pt{
+    <span style="color: #333399; font-weight: bold">double</span> x, y;
+    pt (){}
+    pt (<span style="color: #333399; font-weight: bold">double</span> _x, <span style="color: #333399; font-weight: bold">double</span> _y){
+        x <span style="color: #333333">=</span> _x; y <span style="color: #333333">=</span> _y;
+    }
+    pt <span style="color: #008800; font-weight: bold">operator</span> <span style="color: #333333">-</span> (pt a){
+        <span style="color: #008800; font-weight: bold">return</span> pt (x <span style="color: #333333">-</span> a.x, y <span style="color: #333333">-</span> a.y);
+    }
+    <span style="color: #333399; font-weight: bold">void</span> get (){
+        scanf (<span style="background-color: #fff0f0">&quot;%lf %lf&quot;</span>, <span style="color: #333333">&amp;</span>x, <span style="color: #333333">&amp;</span>y);
+    }
+};
+
+<span style="color: #333399; font-weight: bold">double</span> <span style="color: #0066BB; font-weight: bold">cross</span> (pt a, pt b){
+    <span style="color: #008800; font-weight: bold">return</span> a.x <span style="color: #333333">*</span> b.y <span style="color: #333333">-</span> a.y <span style="color: #333333">*</span> b.x;
+}
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">orient</span> (pt a, pt b, pt c){
+    <span style="color: #333399; font-weight: bold">double</span> d <span style="color: #333333">=</span> cross (b <span style="color: #333333">-</span> a, c <span style="color: #333333">-</span> a);
+    <span style="color: #008800; font-weight: bold">if</span> (fabs (d) <span style="color: #333333">&lt;</span> eps) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+    <span style="color: #008800; font-weight: bold">if</span> (d <span style="color: #333333">&lt;</span> <span style="color: #0000DD; font-weight: bold">0</span>) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1</span>;
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0000DD; font-weight: bold">1</span>;
+}
+
+<span style="color: #008800; font-weight: bold">struct</span> line{
+    <span style="color: #333399; font-weight: bold">double</span> a, b, c;
+    line (){}
+    line (pt p, pt q){
+        a <span style="color: #333333">=</span> p.y <span style="color: #333333">-</span> q.y;
+        b <span style="color: #333333">=</span> q.x <span style="color: #333333">-</span> p.x;
+        c <span style="color: #333333">=</span> <span style="color: #333333">-</span>a <span style="color: #333333">*</span> p.x <span style="color: #333333">-</span> b <span style="color: #333333">*</span> p.y;
+    }
+};
+
+<span style="color: #333399; font-weight: bold">bool</span> <span style="color: #0066BB; font-weight: bold">areParallel</span> (line p, line q){
+    <span style="color: #008800; font-weight: bold">return</span> (fabs (p.a <span style="color: #333333">*</span> q.b <span style="color: #333333">-</span> q.a <span style="color: #333333">*</span> p.b) <span style="color: #333333">&lt;</span> eps);
+}
+
+<span style="color: #333399; font-weight: bold">bool</span> <span style="color: #0066BB; font-weight: bold">intersect</span> (line p, line q, pt<span style="color: #333333">&amp;</span> out){
+    <span style="color: #008800; font-weight: bold">if</span> (areParallel(p, q)) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">false</span>;
+    <span style="color: #333399; font-weight: bold">double</span> d <span style="color: #333333">=</span> p.a <span style="color: #333333">*</span> q.b <span style="color: #333333">-</span> q.a <span style="color: #333333">*</span> p.b;
+    out.x <span style="color: #333333">=</span> (p.b <span style="color: #333333">*</span> q.c <span style="color: #333333">-</span> p.c <span style="color: #333333">*</span> q.b) <span style="color: #333333">/</span> d;
+    out.y <span style="color: #333333">=</span> (q.a <span style="color: #333333">*</span> p.c <span style="color: #333333">-</span> p.a <span style="color: #333333">*</span> q.c) <span style="color: #333333">/</span> d;
+<span style="color: #888888">//    cerr &lt;&lt; out.x &lt;&lt; &quot; &quot; &lt;&lt; out.y &lt;&lt; endl;</span>
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">true</span>;
+}
+
+pt a[maxn];
+
+<span style="color: #333399; font-weight: bold">bool</span> <span style="color: #0066BB; font-weight: bold">ok</span> (pt out, <span style="color: #333399; font-weight: bold">int</span> n){
+    <span style="color: #333399; font-weight: bold">bool</span> pos <span style="color: #333333">=</span> <span style="color: #007020">false</span>, neg <span style="color: #333333">=</span> <span style="color: #007020">false</span>;
+    <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> n; i<span style="color: #333333">++</span>){
+        <span style="color: #333399; font-weight: bold">int</span> d <span style="color: #333333">=</span> orient (a[i], a[(i <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>) <span style="color: #333333">%</span> n], out);
+        <span style="color: #008800; font-weight: bold">if</span> (d <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">1</span>) pos <span style="color: #333333">=</span> <span style="color: #007020">true</span>;
+        <span style="color: #008800; font-weight: bold">else</span> <span style="color: #008800; font-weight: bold">if</span> (d <span style="color: #333333">==</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1</span>) neg <span style="color: #333333">=</span> <span style="color: #007020">true</span>;
+    }
+    <span style="color: #008800; font-weight: bold">if</span> (pos and neg) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">false</span>;
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">true</span>;
+}
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">main</span> (){
+<span style="color: #888888">//    filein;</span>
+    <span style="color: #333399; font-weight: bold">int</span> n;
+    <span style="color: #008800; font-weight: bold">while</span> (<span style="color: #333333">~</span>scanf (<span style="background-color: #fff0f0">&quot;%d&quot;</span>, <span style="color: #333333">&amp;</span>n) and n){
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> n; i<span style="color: #333333">++</span>) a[i].get();
+        <span style="color: #333399; font-weight: bold">bool</span> ans <span style="color: #333333">=</span> <span style="color: #007020">false</span>;
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> n and <span style="color: #333333">!</span>ans; i<span style="color: #333333">++</span>){
+            <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> j <span style="color: #333333">=</span> i <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>; j <span style="color: #333333">&lt;</span> n; j<span style="color: #333333">++</span>){
+                pt out;
+                <span style="color: #008800; font-weight: bold">if</span> (intersect (line (a[i], a[(i <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>) <span style="color: #333333">%</span> n]), line (a[j], a[(j <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>) <span style="color: #333333">%</span> n]), out)){
+                    <span style="color: #008800; font-weight: bold">if</span> (ok (out, n)){
+                        ans <span style="color: #333333">=</span> <span style="color: #007020">true</span>;
+                        <span style="color: #008800; font-weight: bold">break</span>;
+                    }
+                }
+            }
+        }
+        <span style="color: #008800; font-weight: bold">if</span> (ans) puts (<span style="background-color: #fff0f0">&quot;1&quot;</span>);
+        <span style="color: #008800; font-weight: bold">else</span> puts (<span style="background-color: #fff0f0">&quot;0&quot;</span>);
+    }
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+}
+</pre></div>
+
+
+		</div>
+		<script>
+		show = false;
+		function p3130() {
+			show = !show;
+			if (show)
+				document.getElementById('p3130').style.display = "block";
+			else
+				document.getElementById('p3130').style.display = "none";
+		}
+		</script>
+		</div>
+	</div>
+</div>
+
+					<!-- post -->
+					<div class="post">
+	<h2 class="title">POJ 3335 - Rotating Scoreboard</h2>
+	<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
+	<div class="entry">
+		<p class="links"><a href="http://poj.org/problem?id=3335" target="_blank">প্রবলেম লিংক</a></p>
+		<p>এই প্রবলেমটাও খুব সুন্দর। এটা হাফ প্লেন ইন্টারসেকশন দিয়ে করা যায়। প্রথমে সবগুলা বাহুর ছেদবিন্দু নিতে হবে। এখন প্রতিটি সরলরেখা তলকে দুইটা অর্ধতলে বিভক্ত করে। এখন এই অর্ধতল গুলা যে এরিয়া তে ছেদ করে, অর্থাৎ তাদের কমন যে এরিয়া সেটা দেখতে অবশ্যই একটা কনভেক্স হাল হবে। হাফপ্লেন ইন্টারসেকশন দিয়ে কনভেক্স হাল বের করা যেই কথা, আর n টা পয়েন্টের ভরনয় ডায়াগ্রাম বের করা একই কথা। অনেকটা ফ্লো আর বাইপারটাইট ম্যাচিং এর মত। একটা অপরটার ডুয়াল। তো এই প্রবলেমে, সবগুলা বাহুর ইন্টারসেকশন বের করার পরে যেই পয়েন্ট গুলা পাবো, সেগুলাই কিন্তু আমার কনভেক্স হালের বাউন্ডারি পয়েন্ট হবে। এখন আমরা একটা করে এই বিন্দু নিবো, এবং দেখবো কোন বিন্দু সবগুলা রেখার একই পাশে (পজিটিভ অথবা নেগেটিভ) আছে নাকি। তাইলে আমাদের কল্পিত কনভেক্স হাল বানানো সম্ভব, অর্থাৎ উত্তর "হ্যাঁ"। আর নাইলে নাই। সুন্দরভাবে "না" প্রিন্ট করে দিবো।</p>
+		<div>
+		<button class = "button" onclick="p3335()">কোড</button>
+		<div id="p3335" style="display:none"><!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #557799">#include &lt;algorithm&gt;</span>
+<span style="color: #557799">#include &lt;cassert&gt;</span>
+<span style="color: #557799">#include &lt;cmath&gt;</span>
+<span style="color: #557799">#include &lt;cstdio&gt;</span>
+<span style="color: #557799">#include &lt;cstring&gt;</span>
+<span style="color: #557799">#include &lt;iostream&gt;</span>
+<span style="color: #557799">#include &lt;queue&gt;</span>
+<span style="color: #557799">#include &lt;sstream&gt;</span>
+<span style="color: #557799">#include &lt;vector&gt;</span>
+
+<span style="color: #557799">#define filein freopen (&quot;in.txt&quot;, &quot;r&quot;, stdin)</span>
+<span style="color: #557799">#define fileout freopen (&quot;out.txt&quot;, &quot;w&quot;, stdout)</span>
+<span style="color: #557799">#define dbg(x) cerr &lt;&lt; #x &lt;&lt; &quot;: &quot; &lt;&lt; x &lt;&lt; endl</span>
+
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #008800; font-weight: bold">namespace</span> std;
+<span style="color: #008800; font-weight: bold">typedef</span> <span style="color: #333399; font-weight: bold">long</span> <span style="color: #333399; font-weight: bold">long</span> ll;
+
+<span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">int</span> maxn <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">102</span>;
+<span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">double</span> eps <span style="color: #333333">=</span> <span style="color: #6600EE; font-weight: bold">1e-6</span> ;
+
+<span style="color: #008800; font-weight: bold">struct</span> pt{
+    <span style="color: #333399; font-weight: bold">double</span> x, y;
+    pt (){}
+    pt (<span style="color: #333399; font-weight: bold">double</span> _x, <span style="color: #333399; font-weight: bold">double</span> _y){
+        x <span style="color: #333333">=</span> _x; y <span style="color: #333333">=</span> _y;
+    }
+    pt <span style="color: #008800; font-weight: bold">operator</span> <span style="color: #333333">-</span> (pt a){
+        <span style="color: #008800; font-weight: bold">return</span> pt (x <span style="color: #333333">-</span> a.x, y <span style="color: #333333">-</span> a.y);
+    }
+    <span style="color: #333399; font-weight: bold">void</span> get (){
+        scanf (<span style="background-color: #fff0f0">&quot;%lf %lf&quot;</span>, <span style="color: #333333">&amp;</span>x, <span style="color: #333333">&amp;</span>y);
+    }
+};
+
+<span style="color: #333399; font-weight: bold">double</span> <span style="color: #0066BB; font-weight: bold">cross</span> (pt a, pt b){
+    <span style="color: #008800; font-weight: bold">return</span> a.x <span style="color: #333333">*</span> b.y <span style="color: #333333">-</span> a.y <span style="color: #333333">*</span> b.x;
+}
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">orient</span> (pt a, pt b, pt c){
+    <span style="color: #333399; font-weight: bold">double</span> d <span style="color: #333333">=</span> cross (b <span style="color: #333333">-</span> a, c <span style="color: #333333">-</span> a);
+    <span style="color: #008800; font-weight: bold">if</span> (fabs (d) <span style="color: #333333">&lt;</span> eps) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+    <span style="color: #008800; font-weight: bold">if</span> (d <span style="color: #333333">&lt;</span> <span style="color: #0000DD; font-weight: bold">0</span>) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1</span>;
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0000DD; font-weight: bold">1</span>;
+}
+
+<span style="color: #008800; font-weight: bold">struct</span> line{
+    <span style="color: #333399; font-weight: bold">double</span> a, b, c;
+    line (){}
+    line (pt p, pt q){
+        a <span style="color: #333333">=</span> p.y <span style="color: #333333">-</span> q.y;
+        b <span style="color: #333333">=</span> q.x <span style="color: #333333">-</span> p.x;
+        c <span style="color: #333333">=</span> <span style="color: #333333">-</span>a <span style="color: #333333">*</span> p.x <span style="color: #333333">-</span> b <span style="color: #333333">*</span> p.y;
+    }
+};
+
+<span style="color: #333399; font-weight: bold">bool</span> <span style="color: #0066BB; font-weight: bold">areParallel</span> (line p, line q){
+    <span style="color: #008800; font-weight: bold">return</span> (fabs (p.a <span style="color: #333333">*</span> q.b <span style="color: #333333">-</span> q.a <span style="color: #333333">*</span> p.b) <span style="color: #333333">&lt;</span> eps);
+}
+
+<span style="color: #333399; font-weight: bold">bool</span> <span style="color: #0066BB; font-weight: bold">intersect</span> (line p, line q, pt<span style="color: #333333">&amp;</span> out){
+    <span style="color: #008800; font-weight: bold">if</span> (areParallel(p, q)) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">false</span>;
+    <span style="color: #333399; font-weight: bold">double</span> d <span style="color: #333333">=</span> p.a <span style="color: #333333">*</span> q.b <span style="color: #333333">-</span> q.a <span style="color: #333333">*</span> p.b;
+    out.x <span style="color: #333333">=</span> (p.b <span style="color: #333333">*</span> q.c <span style="color: #333333">-</span> p.c <span style="color: #333333">*</span> q.b) <span style="color: #333333">/</span> d;
+    out.y <span style="color: #333333">=</span> (q.a <span style="color: #333333">*</span> p.c <span style="color: #333333">-</span> p.a <span style="color: #333333">*</span> q.c) <span style="color: #333333">/</span> d;
+<span style="color: #888888">//    cerr &lt;&lt; out.x &lt;&lt; &quot; &quot; &lt;&lt; out.y &lt;&lt; endl;</span>
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">true</span>;
+}
+
+pt a[maxn];
+pair <span style="color: #333333">&lt;</span>pt, pt<span style="color: #333333">&gt;</span> lines[maxn];
+pt points[maxn <span style="color: #333333">*</span> maxn];
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">main</span> (){
+<span style="color: #888888">//    filein;</span>
+    <span style="color: #333399; font-weight: bold">int</span> t;
+    scanf (<span style="background-color: #fff0f0">&quot;%d&quot;</span>, <span style="color: #333333">&amp;</span>t);
+    <span style="color: #008800; font-weight: bold">while</span> (t<span style="color: #333333">--</span>){
+        <span style="color: #333399; font-weight: bold">int</span> n;
+        scanf (<span style="background-color: #fff0f0">&quot;%d&quot;</span>, <span style="color: #333333">&amp;</span>n);
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> n; i<span style="color: #333333">++</span>) a[i].get();
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> n; i<span style="color: #333333">++</span>){
+            lines[i] <span style="color: #333333">=</span> make_pair (a[i], a[(i <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>) <span style="color: #333333">%</span> n]);
+        }
+        <span style="color: #333399; font-weight: bold">int</span> cnt <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> n; i<span style="color: #333333">++</span>){
+            <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> j <span style="color: #333333">=</span> i <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>; j <span style="color: #333333">&lt;</span> n; j<span style="color: #333333">++</span>){
+                pt out;
+                <span style="color: #008800; font-weight: bold">if</span> (intersect (line (lines[i].first, lines[i].second), line (lines[j].first, lines[j].second), out)){
+                    points[cnt<span style="color: #333333">++</span>] <span style="color: #333333">=</span> out;
+                }
+            }
+        }
+        <span style="color: #333399; font-weight: bold">bool</span> ans <span style="color: #333333">=</span> <span style="color: #007020">false</span>;
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> c <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; c <span style="color: #333333">&lt;</span> cnt; c<span style="color: #333333">++</span>){
+            <span style="color: #333399; font-weight: bold">bool</span> pos <span style="color: #333333">=</span> <span style="color: #007020">false</span>, neg <span style="color: #333333">=</span> <span style="color: #007020">false</span>;
+            <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> n; i<span style="color: #333333">++</span>){
+                <span style="color: #333399; font-weight: bold">int</span> o <span style="color: #333333">=</span> orient (a[i], a[(i <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>) <span style="color: #333333">%</span> n], points[c]);
+                <span style="color: #008800; font-weight: bold">if</span> (o <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">1</span>) pos <span style="color: #333333">=</span> <span style="color: #007020">true</span>;
+                <span style="color: #008800; font-weight: bold">else</span> <span style="color: #008800; font-weight: bold">if</span> (o <span style="color: #333333">==</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1</span>) neg <span style="color: #333333">=</span> <span style="color: #007020">true</span>;
+            }
+            <span style="color: #008800; font-weight: bold">if</span> ((<span style="color: #333333">!</span>pos and neg) or (<span style="color: #333333">!</span>neg and pos)){
+                ans <span style="color: #333333">=</span> <span style="color: #007020">true</span>;
+                <span style="color: #008800; font-weight: bold">break</span>;
+            }
+        }
+        <span style="color: #008800; font-weight: bold">if</span> (ans) puts (<span style="background-color: #fff0f0">&quot;YES&quot;</span>);
+        <span style="color: #008800; font-weight: bold">else</span> puts (<span style="background-color: #fff0f0">&quot;NO&quot;</span>);
+    }
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+}
+</pre></div>
+
+		</div>
+		<script>
+		show = false;
+		function p3335() {
+			show = !show;
+			if (show)
+				document.getElementById('p3335').style.display = "block";
+			else
+				document.getElementById('p3335').style.display = "none";
+		}
+		</script>
+		</div>
+	</div>
+</div>
+
+					<!-- post -->
+					<div class="post">
 	<h2 class="title">POJ 3429 - Geometry with a ruler</h2>
 	<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
 	<div class="entry">
