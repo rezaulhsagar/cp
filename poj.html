@@ -864,7 +864,7 @@ pt a[maxn], hull[maxn];
 	<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
 	<div class="entry">
 		<p class="links"><a href="http://poj.org/problem?id=2780" target="_blank">প্রবলেম লিংক</a></p>
-		<p>O(n*n) এ সবগুলা ঢাল বের করতে হবে। প্রতি ঢালের জন্য ম্যাক্সিমাম বের করে প্রিন্ট করতে হবে। এখন কথা হচ্ছে ঢাল্গুলো আমরা কিভাবে স্টোর করতে পারি। এক উপায়ে করা যায় pair<int,int> নিয়ে, আরেক উপায়ে করা যায় সরাসরি float বা double এ ঢালের মান নিয়ে। যদি প্রিসিশন এ খুব বেশি সমস্যা না হয়, তাইলে double এ নিলে সমস্যা নাই। অন্যথায় pair<int,int> নিলে সেটাকে ম্যাপে স্টোর করতে হবে। এবং সেই কারণে কমপ্লেক্সিটি log(n) বেড়ে</p>
+		<p>O(n*n) এ সবগুলা ঢাল বের করতে হবে। প্রতি ঢালের জন্য ম্যাক্সিমাম বের করে প্রিন্ট করতে হবে। এখন কথা হচ্ছে ঢালগুলো আমরা কিভাবে স্টোর করতে পারি। এক উপায়ে করা যায় pair<int,int> নিয়ে, আরেক উপায়ে করা যায় সরাসরি float বা double এ ঢালের মান নিয়ে। যদি প্রিসিশন এ খুব বেশি সমস্যা না হয়, তাইলে double এ নিলে সমস্যা নাই। অন্যথায় pair<int,int> নিলে সেটাকে ম্যাপে স্টোর করতে হবে। এবং সেই কারণে কমপ্লেক্সিটি log(n) বেড়ে যাবে।</p>
 		<div>
 		<button class = "button" onclick="p2780()">কোড</button>
 		<div id="p2780" style="display:none"><!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #557799">#include &lt;algorithm&gt;</span>
