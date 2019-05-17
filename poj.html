@@ -857,6 +857,94 @@ pt a[maxn], hull[maxn];
 	</div>
 </div>
 					
+					
+					<!-- post 2780-->
+					<div class="post">
+	<h2 class="title">POJ 2780 - Linearity</h2>
+	<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
+	<div class="entry">
+		<p class="links"><a href="http://poj.org/problem?id=2780" target="_blank">প্রবলেম লিংক</a></p>
+		<p>O(n*n) এ সবগুলা ঢাল বের করতে হবে। প্রতি ঢালের জন্য ম্যাক্সিমাম বের করে প্রিন্ট করতে হবে। এখন কথা হচ্ছে ঢাল্গুলো আমরা কিভাবে স্টোর করতে পারি। এক উপায়ে করা যায় pair<int,int> নিয়ে, আরেক উপায়ে করা যায় সরাসরি float বা double এ ঢালের মান নিয়ে। যদি প্রিসিশন এ খুব বেশি সমস্যা না হয়, তাইলে double এ নিলে সমস্যা নাই। অন্যথায় pair<int,int> নিলে সেটাকে ম্যাপে স্টোর করতে হবে। এবং সেই কারণে কমপ্লেক্সিটি log(n) বেড়ে</p>
+		<div>
+		<button class = "button" onclick="p2780()">কোড</button>
+		<div id="p2780" style="display:none"><!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #557799">#include &lt;algorithm&gt;</span>
+<span style="color: #557799">#include &lt;cassert&gt;</span>
+<span style="color: #557799">#include &lt;cmath&gt;</span>
+<span style="color: #557799">#include &lt;cstdio&gt;</span>
+<span style="color: #557799">#include &lt;cstring&gt;</span>
+<span style="color: #557799">#include &lt;iostream&gt;</span>
+<span style="color: #557799">#include &lt;queue&gt;</span>
+<span style="color: #557799">#include &lt;sstream&gt;</span>
+<span style="color: #557799">#include &lt;vector&gt;</span>
+
+<span style="color: #557799">#define filein freopen (&quot;in.txt&quot;, &quot;r&quot;, stdin)</span>
+<span style="color: #557799">#define fileout freopen (&quot;out.txt&quot;, &quot;w&quot;, stdout)</span>
+<span style="color: #557799">#define dbg(x) cerr &lt;&lt; #x &lt;&lt; &quot;: &quot; &lt;&lt; x &lt;&lt; endl</span>
+
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #008800; font-weight: bold">namespace</span> std;
+<span style="color: #008800; font-weight: bold">typedef</span> <span style="color: #333399; font-weight: bold">long</span> <span style="color: #333399; font-weight: bold">long</span> ll;
+
+<span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">int</span> maxn <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1105</span>;
+<span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">double</span> eps <span style="color: #333333">=</span> <span style="color: #6600EE; font-weight: bold">1e-8</span>;
+
+<span style="color: #333399; font-weight: bold">int</span> a[maxn], b[maxn];
+<span style="color: #333399; font-weight: bold">double</span> d[maxn <span style="color: #333333">*</span> maxn];
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">main</span> (){
+<span style="color: #888888">//    filein;</span>
+    <span style="color: #333399; font-weight: bold">int</span> n;
+    <span style="color: #008800; font-weight: bold">while</span> (<span style="color: #333333">~</span>scanf (<span style="background-color: #fff0f0">&quot;%d&quot;</span>, <span style="color: #333333">&amp;</span>n)){
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> n; i<span style="color: #333333">++</span>){
+            scanf (<span style="background-color: #fff0f0">&quot;%d %d&quot;</span>, <span style="color: #333333">&amp;</span>a[i], <span style="color: #333333">&amp;</span>b[i]);
+        }
+        <span style="color: #333399; font-weight: bold">int</span> inv;
+        <span style="color: #333399; font-weight: bold">int</span> cnt, maxi <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> n; i<span style="color: #333333">++</span>){
+            inv <span style="color: #333333">=</span> cnt <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+            <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> j <span style="color: #333333">=</span> i <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>; j <span style="color: #333333">&lt;</span> n; j<span style="color: #333333">++</span>){
+                <span style="color: #333399; font-weight: bold">int</span> dx <span style="color: #333333">=</span> a[i] <span style="color: #333333">-</span> a[j];
+                <span style="color: #333399; font-weight: bold">int</span> dy <span style="color: #333333">=</span> b[i] <span style="color: #333333">-</span> b[j];
+                <span style="color: #008800; font-weight: bold">if</span> (dx <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">0</span>) inv<span style="color: #333333">++</span>;
+                <span style="color: #008800; font-weight: bold">else</span> d[cnt<span style="color: #333333">++</span>] <span style="color: #333333">=</span> (<span style="color: #6600EE; font-weight: bold">1.0</span> <span style="color: #333333">*</span> dy <span style="color: #333333">/</span> dx);
+            }
+            sort (d, d <span style="color: #333333">+</span> cnt);
+            <span style="color: #333399; font-weight: bold">int</span> streak <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>;
+            <span style="color: #333399; font-weight: bold">double</span> prev <span style="color: #333333">=</span> d[<span style="color: #0000DD; font-weight: bold">0</span>];
+            <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>; i <span style="color: #333333">&lt;</span> cnt; i<span style="color: #333333">++</span>){
+                <span style="color: #008800; font-weight: bold">if</span> (fabs (d[i] <span style="color: #333333">-</span> prev) <span style="color: #333333">&lt;</span> eps){
+                    streak<span style="color: #333333">++</span>;
+                }
+                <span style="color: #008800; font-weight: bold">else</span>{
+                    maxi <span style="color: #333333">=</span> max (maxi, streak);
+                    streak <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>;
+                }
+                prev <span style="color: #333333">=</span> d[i];
+            }
+            maxi <span style="color: #333333">=</span> max (maxi, streak);
+            maxi <span style="color: #333333">=</span> max (maxi, inv);
+        }
+        printf (<span style="background-color: #fff0f0">&quot;%d</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>, maxi <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>);
+    }
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+}
+</pre></div>
+
+		
+		</div>
+		<script>
+		show = false;
+		function p2780() {
+			show = !show;
+			if (show)
+				document.getElementById('p2780').style.display = "block";
+			else
+				document.getElementById('p2780').style.display = "none";
+		}
+		</script>
+		</div>
+	</div>
+</div>
+				
 					<!-- post 3130-->
 					<div class="post">
 	<h2 class="title">POJ 3130 - How I Mathematician Wonder What You Are!</h2>
