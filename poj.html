@@ -44,8 +44,8 @@ Released   : 20120528
 		<div id="page-bgtop">
 			<div id="page-bgbtm">
 				<div id="content">
-					<!-- post -->
-					
+				
+					<!-- post 1039-->
 					<div class="post">
 						<h2 class="title">POJ 1039 - Pipe</h2>
 						<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
@@ -169,13 +169,8 @@ pt a[maxn], b[maxn];
 							</div>
 						</div>
 					</div>
-				<!--paste code up -->
-				<!--paste code up -->
-				<!--paste code up -->
-				<!--paste code up -->
 				
-					<!-- post -->
-				
+					<!-- post 1066-->
 					<div class="post">
 						<h2 class="title">POJ 1066 - Treasure Hunt</h2>
 						<p class="meta"><span class="date">১৬ মে, ২০১৯</span></p>
@@ -297,7 +292,7 @@ line lines[maxn];
 						</div>
 					</div>
 					
-					<!--paste code up -->
+					<!-- post 1113-->
 					<div class="post">
 	<h2 class="title">POJ 1113 - Wall</h2>
 	<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
@@ -402,9 +397,254 @@ pt a[maxn], H[maxn];
 		</div>
 	</div>
 </div>
-					
-					
-					<!-- post -->
+
+					<!-- post 1127-->
+					<div class="post">
+	<h2 class="title">POJ 1127 - Jack Straws</h2>
+	<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
+	<div class="entry">
+		<p class="links"><a href="http://poj.org/problem?id=1127" target="_blank">প্রবলেম লিংক</a></p>
+		<p>সেগমেন্ট সেগমেন্ট ইন্টারসেকশন।  ব্রুট ফোর্স করা যায়, অথবা ডিসজয়েন্ট সেট ইউনিয়ন বা ডিএফএস যে কোনটাই করা যায়। কনস্ট্রেইন্টস কম। বেশি হইলে অবশ্যই এলগো চালানো লাগতো।</p>
+		<div>
+		<button class = "button" onclick="p1127()">কোড</button>
+		<div id="p1127" style="display:none"><!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #557799">#include &lt;iostream&gt;</span>
+<span style="color: #557799">#include &lt;cstdio&gt;</span>
+
+<span style="color: #557799">#define filein freopen (&quot;in.txt&quot;, &quot;r&quot;, stdin)</span>
+<span style="color: #557799">#define fileout freopen (&quot;out.txt&quot;, &quot;w&quot;, stdout)</span>
+<span style="color: #557799">#define dbg(x) cerr &lt;&lt; #x &lt;&lt; &quot;: &quot; &lt;&lt; x &lt;&lt; endl</span>
+
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #008800; font-weight: bold">namespace</span> std;
+<span style="color: #008800; font-weight: bold">typedef</span> <span style="color: #333399; font-weight: bold">long</span> <span style="color: #333399; font-weight: bold">long</span> ll;
+
+<span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">int</span> maxn <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">102</span>;
+
+<span style="color: #008800; font-weight: bold">struct</span> pt{
+    <span style="color: #333399; font-weight: bold">int</span> x, y;
+    pt(){}
+    pt(<span style="color: #333399; font-weight: bold">int</span> a, <span style="color: #333399; font-weight: bold">int</span> b){
+        x <span style="color: #333333">=</span> a; y <span style="color: #333333">=</span> b;
+    }
+    pt <span style="color: #008800; font-weight: bold">operator</span> <span style="color: #333333">-</span> (pt other){
+        <span style="color: #008800; font-weight: bold">return</span> pt (x <span style="color: #333333">-</span> other.x, y <span style="color: #333333">-</span> other.y);
+    }
+    <span style="color: #333399; font-weight: bold">void</span> get (){
+        scanf (<span style="background-color: #fff0f0">&quot;%d %d&quot;</span>, <span style="color: #333333">&amp;</span>x, <span style="color: #333333">&amp;</span>y);
+    }
+};
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">dot</span> (pt a, pt b){
+    <span style="color: #008800; font-weight: bold">return</span> a.x <span style="color: #333333">*</span> b.x <span style="color: #333333">+</span> a.y <span style="color: #333333">*</span> b.y;
+}
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">cross</span> (pt a, pt b){
+    <span style="color: #008800; font-weight: bold">return</span> a.x <span style="color: #333333">*</span> b.y <span style="color: #333333">-</span> a.y <span style="color: #333333">*</span> b.x;
+}
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">orient</span> (pt a, pt b, pt c){
+    <span style="color: #008800; font-weight: bold">return</span> cross (b <span style="color: #333333">-</span> a, c <span style="color: #333333">-</span> a);
+}
+
+<span style="color: #333399; font-weight: bold">bool</span> <span style="color: #0066BB; font-weight: bold">indisk</span> (pt a, pt b, pt p){
+    <span style="color: #008800; font-weight: bold">return</span> dot (a <span style="color: #333333">-</span> p, b <span style="color: #333333">-</span> p) <span style="color: #333333">&lt;=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+}
+
+<span style="color: #333399; font-weight: bold">bool</span> <span style="color: #0066BB; font-weight: bold">onsegment</span> (pt a, pt b, pt p){
+    <span style="color: #008800; font-weight: bold">return</span> orient (a, b, p) <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">0</span> and indisk (a, b, p);
+}
+
+pair <span style="color: #333333">&lt;</span>pt, pt<span style="color: #333333">&gt;</span> a[maxn];
+
+<span style="color: #333399; font-weight: bold">bool</span> <span style="color: #0066BB; font-weight: bold">ok</span> (pt w, pt x, pt y, pt z){
+    <span style="color: #008800; font-weight: bold">if</span> (onsegment (w, x, y)) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">true</span>;
+    <span style="color: #008800; font-weight: bold">if</span> (onsegment (w, x, z)) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">true</span>;
+    <span style="color: #008800; font-weight: bold">if</span> (onsegment (y, z, w)) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">true</span>;
+    <span style="color: #008800; font-weight: bold">if</span> (onsegment (y, z, x)) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">true</span>;
+    <span style="color: #333399; font-weight: bold">int</span> d1 <span style="color: #333333">=</span> orient (w, x, y),
+        d2 <span style="color: #333333">=</span> orient (w, x, z),
+        d3 <span style="color: #333333">=</span> orient (y, z, w),
+        d4 <span style="color: #333333">=</span> orient (y, z, x);
+    <span style="color: #008800; font-weight: bold">return</span> (d1 <span style="color: #333333">*</span> d2 <span style="color: #333333">&lt;</span> <span style="color: #0000DD; font-weight: bold">0</span> and d3 <span style="color: #333333">*</span> d4 <span style="color: #333333">&lt;</span> <span style="color: #0000DD; font-weight: bold">0</span>);
+}
+
+<span style="color: #333399; font-weight: bold">int</span> parent[maxn];
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">findparent</span> (<span style="color: #333399; font-weight: bold">int</span> a){
+    <span style="color: #008800; font-weight: bold">if</span> (parent[a] <span style="color: #333333">==</span> a) <span style="color: #008800; font-weight: bold">return</span> a;
+    <span style="color: #008800; font-weight: bold">return</span> parent[a] <span style="color: #333333">=</span> findparent (parent[a]);
+}
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">main</span> (){
+<span style="color: #888888">//    filein;</span>
+    <span style="color: #333399; font-weight: bold">int</span> n;
+    <span style="color: #008800; font-weight: bold">while</span> (<span style="color: #333333">~</span>scanf (<span style="background-color: #fff0f0">&quot;%d&quot;</span>, <span style="color: #333333">&amp;</span>n) and n){
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>; i <span style="color: #333333">&lt;=</span> n; i<span style="color: #333333">++</span>){
+            a[i].first.get();
+            a[i].second.get();
+            parent[i] <span style="color: #333333">=</span> i;
+        }
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>; i <span style="color: #333333">&lt;=</span> n; i<span style="color: #333333">++</span>){
+            <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> j <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>; j <span style="color: #333333">&lt;=</span> n; j<span style="color: #333333">++</span>){
+                <span style="color: #008800; font-weight: bold">if</span> (i <span style="color: #333333">==</span> j) <span style="color: #008800; font-weight: bold">continue</span>;
+                <span style="color: #008800; font-weight: bold">if</span> (ok (a[i].first, a[i].second, a[j].first, a[j].second)){
+                    <span style="color: #333399; font-weight: bold">int</span> pa <span style="color: #333333">=</span> findparent (i);
+                    <span style="color: #333399; font-weight: bold">int</span> pb <span style="color: #333333">=</span> findparent (j);
+                    <span style="color: #008800; font-weight: bold">if</span> (pa <span style="color: #333333">!=</span> pb){
+                        parent[pa] <span style="color: #333333">=</span> pb;
+                    }
+                }
+            }
+        }
+        <span style="color: #333399; font-weight: bold">int</span> u, v;
+        <span style="color: #008800; font-weight: bold">while</span> (<span style="color: #333333">~</span>scanf (<span style="background-color: #fff0f0">&quot;%d %d&quot;</span>, <span style="color: #333333">&amp;</span>u, <span style="color: #333333">&amp;</span>v)){
+            <span style="color: #008800; font-weight: bold">if</span> (<span style="color: #333333">!</span>u and <span style="color: #333333">!</span>v) <span style="color: #008800; font-weight: bold">break</span>;
+            <span style="color: #008800; font-weight: bold">if</span> (findparent (u) <span style="color: #333333">==</span> findparent (v))
+                puts (<span style="background-color: #fff0f0">&quot;CONNECTED&quot;</span>);
+            <span style="color: #008800; font-weight: bold">else</span> puts (<span style="background-color: #fff0f0">&quot;NOT CONNECTED&quot;</span>);
+        }
+    }
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+}
+</pre></div>
+
+		
+		</div>
+		<script>
+		show = false;
+		function p1127() {
+			show = !show;
+			if (show)
+				document.getElementById('p1127').style.display = "block";
+			else
+				document.getElementById('p1127').style.display = "none";
+		}
+		</script>
+		</div>
+	</div>
+</div>
+
+					<!-- post 1269-->
+					<div class="post">
+	<h2 class="title">POJ 1269 - Intersecting Lines</h2>
+	<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
+	<div class="entry">
+		<p class="links"><a href="http://poj.org/problem?id=1269" target="_blank">প্রবলেম লিংক</a></p>
+		<p>বেসিক লাইন ইন্টারসেকশন প্রবলেম।</p>
+		<div>
+		<button class = "button" onclick="p1269()">কোড</button>
+		<div id="p1269" style="display:none"><!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #557799">#include &lt;algorithm&gt;</span>
+<span style="color: #557799">#include &lt;cassert&gt;</span>
+<span style="color: #557799">#include &lt;cmath&gt;</span>
+<span style="color: #557799">#include &lt;cstdio&gt;</span>
+<span style="color: #557799">#include &lt;cstring&gt;</span>
+<span style="color: #557799">#include &lt;iostream&gt;</span>
+<span style="color: #557799">#include &lt;queue&gt;</span>
+<span style="color: #557799">#include &lt;sstream&gt;</span>
+<span style="color: #557799">#include &lt;vector&gt;</span>
+
+<span style="color: #557799">#define filein freopen (&quot;in.txt&quot;, &quot;r&quot;, stdin)</span>
+<span style="color: #557799">#define fileout freopen (&quot;out.txt&quot;, &quot;w&quot;, stdout)</span>
+<span style="color: #557799">#define dbg(x) cerr &lt;&lt; #x &lt;&lt; &quot;: &quot; &lt;&lt; x &lt;&lt; endl</span>
+
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #008800; font-weight: bold">namespace</span> std;
+<span style="color: #008800; font-weight: bold">typedef</span> <span style="color: #333399; font-weight: bold">long</span> <span style="color: #333399; font-weight: bold">long</span> ll;
+
+<span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">int</span> maxn <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">102</span>;
+<span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">double</span> eps <span style="color: #333333">=</span> <span style="color: #6600EE; font-weight: bold">1e-8</span> ;
+
+<span style="color: #008800; font-weight: bold">struct</span> pt{
+    <span style="color: #333399; font-weight: bold">double</span> x, y;
+    pt (){}
+    pt (<span style="color: #333399; font-weight: bold">double</span> _x, <span style="color: #333399; font-weight: bold">double</span> _y){
+        x <span style="color: #333333">=</span> _x; y <span style="color: #333333">=</span> _y;
+    }
+    pt <span style="color: #008800; font-weight: bold">operator</span> <span style="color: #333333">-</span> (pt a){
+        <span style="color: #008800; font-weight: bold">return</span> pt (x <span style="color: #333333">-</span> a.x, y <span style="color: #333333">-</span> a.y);
+    }
+    <span style="color: #333399; font-weight: bold">void</span> get (){
+        scanf (<span style="background-color: #fff0f0">&quot;%lf %lf&quot;</span>, <span style="color: #333333">&amp;</span>x, <span style="color: #333333">&amp;</span>y);
+    }
+};
+
+<span style="color: #333399; font-weight: bold">double</span> <span style="color: #0066BB; font-weight: bold">cross</span> (pt a, pt b){
+    <span style="color: #008800; font-weight: bold">return</span> a.x <span style="color: #333333">*</span> b.y <span style="color: #333333">-</span> a.y <span style="color: #333333">*</span> b.x;
+}
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">orient</span> (pt a, pt b, pt c){
+    <span style="color: #333399; font-weight: bold">double</span> d <span style="color: #333333">=</span> cross (b <span style="color: #333333">-</span> a, c <span style="color: #333333">-</span> a);
+    <span style="color: #008800; font-weight: bold">if</span> (fabs (d) <span style="color: #333333">&lt;</span> eps) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+    <span style="color: #008800; font-weight: bold">if</span> (d <span style="color: #333333">&lt;</span> <span style="color: #0000DD; font-weight: bold">0</span>) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1</span>;
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0000DD; font-weight: bold">1</span>;
+}
+
+<span style="color: #008800; font-weight: bold">struct</span> line{
+    <span style="color: #333399; font-weight: bold">double</span> a, b, c;
+    line (){}
+    line (pt p, pt q){
+        a <span style="color: #333333">=</span> p.y <span style="color: #333333">-</span> q.y;
+        b <span style="color: #333333">=</span> q.x <span style="color: #333333">-</span> p.x;
+        c <span style="color: #333333">=</span> <span style="color: #333333">-</span>a <span style="color: #333333">*</span> p.x <span style="color: #333333">-</span> b <span style="color: #333333">*</span> p.y;
+    }
+};
+
+<span style="color: #333399; font-weight: bold">bool</span> <span style="color: #0066BB; font-weight: bold">areParallel</span> (line p, line q){
+    <span style="color: #008800; font-weight: bold">return</span> (fabs (p.a <span style="color: #333333">*</span> q.b <span style="color: #333333">-</span> q.a <span style="color: #333333">*</span> p.b) <span style="color: #333333">&lt;</span> eps);
+}
+
+<span style="color: #333399; font-weight: bold">bool</span> <span style="color: #0066BB; font-weight: bold">areSame</span> (line p, line q){
+    <span style="color: #008800; font-weight: bold">return</span> areParallel(p, q) and (fabs (p.b <span style="color: #333333">*</span> q.c <span style="color: #333333">-</span> q.b <span style="color: #333333">*</span> p.c) <span style="color: #333333">&lt;</span> eps) and (fabs (p.a <span style="color: #333333">*</span> q.c <span style="color: #333333">-</span> q.a <span style="color: #333333">*</span> p.c) <span style="color: #333333">&lt;</span> eps);
+}
+
+<span style="color: #333399; font-weight: bold">bool</span> <span style="color: #0066BB; font-weight: bold">intersect</span> (line p, line q, pt<span style="color: #333333">&amp;</span> out){
+    <span style="color: #008800; font-weight: bold">if</span> (areParallel(p, q)) <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">false</span>;
+    <span style="color: #333399; font-weight: bold">double</span> d <span style="color: #333333">=</span> p.a <span style="color: #333333">*</span> q.b <span style="color: #333333">-</span> q.a <span style="color: #333333">*</span> p.b;
+    out.x <span style="color: #333333">=</span> (p.b <span style="color: #333333">*</span> q.c <span style="color: #333333">-</span> p.c <span style="color: #333333">*</span> q.b) <span style="color: #333333">/</span> d;
+    out.y <span style="color: #333333">=</span> (q.a <span style="color: #333333">*</span> p.c <span style="color: #333333">-</span> p.a <span style="color: #333333">*</span> q.c) <span style="color: #333333">/</span> d;
+<span style="color: #888888">//    cerr &lt;&lt; out.x &lt;&lt; &quot; &quot; &lt;&lt; out.y &lt;&lt; endl;</span>
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">true</span>;
+}
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">main</span>(){
+<span style="color: #888888">//    filein;</span>
+<span style="color: #888888">//    fileout;</span>
+    <span style="color: #333399; font-weight: bold">int</span> t;
+    scanf (<span style="background-color: #fff0f0">&quot;%d&quot;</span>, <span style="color: #333333">&amp;</span>t);
+    puts (<span style="background-color: #fff0f0">&quot;INTERSECTING LINES OUTPUT&quot;</span>);
+    <span style="color: #008800; font-weight: bold">while</span> (t<span style="color: #333333">--</span>){
+        pt a, b, c, d;
+        a.get(); b.get(); c.get(); d.get();
+        line l1 (a, b);
+        line l2 (c, d);
+        <span style="color: #008800; font-weight: bold">if</span> (areSame (l1, l2)) puts (<span style="background-color: #fff0f0">&quot;LINE&quot;</span>);
+        <span style="color: #008800; font-weight: bold">else</span> <span style="color: #008800; font-weight: bold">if</span> (areParallel(l1, l2)) puts (<span style="background-color: #fff0f0">&quot;NONE&quot;</span>);
+        <span style="color: #008800; font-weight: bold">else</span>{
+            pt out;
+            intersect (l1, l2, out);
+            printf (<span style="background-color: #fff0f0">&quot;POINT %.2f %.2f</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>, out.x <span style="color: #333333">+</span> eps, out.y <span style="color: #333333">+</span> eps);
+        }
+    }
+    puts (<span style="background-color: #fff0f0">&quot;END OF OUTPUT&quot;</span>);
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+}
+</pre></div>
+
+		
+		</div>
+		<script>
+		show = false;
+		function p1269() {
+			show = !show;
+			if (show)
+				document.getElementById('p1269').style.display = "block";
+			else
+				document.getElementById('p1269').style.display = "none";
+		}
+		</script>
+		</div>
+	</div>
+</div>
+
+					<!-- post 2187-->
 					<div class="post">
 	<h2 class="title">POJ 2187 - Beauty Contest</h2>
 	<p class="meta"><span class="date">১৬ মে, ২০১৯</span></p>
@@ -516,7 +756,8 @@ pt a[maxn], hull[maxn];
 		</div>
 	</div>
 </div>
-					<!-- post -->
+					
+					<!-- post 2242-->
 					<div class="post">
 	<h2 class="title">POJ 2242 - The Circumference of the Circle </h2>
 	<p class="meta"><span class="date">১৬ মে, ২০১৯</span></p>
@@ -615,7 +856,8 @@ pt a[maxn], hull[maxn];
 		</div>
 	</div>
 </div>
-					<!-- post -->
+					
+					<!-- post 3130-->
 					<div class="post">
 	<h2 class="title">POJ 3130 - How I Mathematician Wonder What You Are!</h2>
 	<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
@@ -745,7 +987,7 @@ pt a[maxn];
 	</div>
 </div>
 
-					<!-- post -->
+					<!-- post 3335-->
 					<div class="post">
 	<h2 class="title">POJ 3335 - Rotating Scoreboard</h2>
 	<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
@@ -881,7 +1123,7 @@ pt points[maxn <span style="color: #333333">*</span> maxn];
 	</div>
 </div>
 
-					<!-- post -->
+					<!-- post 3429-->
 					<div class="post">
 	<h2 class="title">POJ 3429 - Geometry with a ruler</h2>
 	<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
@@ -1022,7 +1264,7 @@ pt arr[maxn];
 		</div>
 	</div>
 </div>
-					<!-- post -->
+				
 					<!-- post -->
 					
 					
