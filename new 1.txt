@@ -1,0 +1,105 @@
+				<!-- post 1106-->
+				<div class="post">
+	<h2 class="title">POJ 1106 - Transmitters</h2>
+	<p class="meta"><span class="date">১৯ মে, ২০১৯</span></p>
+	<div class="entry">
+		<p class="links"><a href="http://poj.org/problem?id=1106" target="_blank">প্রবলেম লিংক</a></p>
+		<p>এই প্রবলেমে একটা অর্ধবৃত্ত দেয়া আছে। আর কিছু বিন্দু দেয়া আছে। আমরা যেটা করতে পারি, অর্ধবৃত্তের কেন্দ্র ধরে এটাকে যেকোন পরিমাণ ঘুরাতে পারি। বলতে হবে সর্বোচ্চ কয়টি বিন্দু আমরা কভার করতে পারি। তো যে বিন্দুগুলো দেয়া আছে, সেগুলাকেই অর্ধবৃত্তের ব্যাসের সাথে এনে টাচ করানো যায়। এবং যেসব পয়েন্ট ব্যাসের এক সাইডে আছে তাদের নিয়ে ম্যাক্সিমাম আপডেট করা যায়। কমপ্লেক্সিটি O(n * n)</p>
+		<div>
+		<button class = "button" onclick="p1106()">কোড</button>
+		<div id="p1106" style="display:none"><!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #557799">#include &lt;algorithm&gt;</span>
+<span style="color: #557799">#include &lt;cmath&gt;</span>
+<span style="color: #557799">#include &lt;cstdio&gt;</span>
+<span style="color: #557799">#include &lt;cstring&gt;</span>
+<span style="color: #557799">#include &lt;iostream&gt;</span>
+<span style="color: #557799">#include &lt;vector&gt;</span>
+<span style="color: #557799">#include &lt;cassert&gt;</span>
+
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #008800; font-weight: bold">namespace</span> std;
+<span style="color: #008800; font-weight: bold">typedef</span> <span style="color: #333399; font-weight: bold">long</span> <span style="color: #333399; font-weight: bold">long</span> ll;
+
+<span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">double</span> pi <span style="color: #333333">=</span> acos (<span style="color: #333333">-</span><span style="color: #6600EE; font-weight: bold">1.0</span>);
+
+<span style="color: #008800; font-weight: bold">typedef</span> <span style="color: #333399; font-weight: bold">double</span> T;
+<span style="color: #008800; font-weight: bold">struct</span> pt{
+    T x, y;
+    pt (){}
+    pt (T _x, T _y){
+        x <span style="color: #333333">=</span> _x; y <span style="color: #333333">=</span> _y;
+    }
+    pt <span style="color: #008800; font-weight: bold">operator</span> <span style="color: #333333">+</span> (pt p){
+        <span style="color: #008800; font-weight: bold">return</span> pt (x <span style="color: #333333">+</span> p.x, y <span style="color: #333333">+</span> p.y);
+    }
+    pt <span style="color: #008800; font-weight: bold">operator</span> <span style="color: #333333">-</span> (pt p){
+        <span style="color: #008800; font-weight: bold">return</span> pt (x <span style="color: #333333">-</span> p.x, y <span style="color: #333333">-</span> p.y);
+    }
+    pt <span style="color: #008800; font-weight: bold">operator</span> <span style="color: #333333">*</span> (T d){
+        <span style="color: #008800; font-weight: bold">return</span> pt (x <span style="color: #333333">*</span> d, y <span style="color: #333333">*</span> d);
+    }
+    pt <span style="color: #008800; font-weight: bold">operator</span> <span style="color: #333333">/</span> (T d){
+        <span style="color: #008800; font-weight: bold">return</span> pt (x <span style="color: #333333">/</span> d, y <span style="color: #333333">/</span> d);
+    }
+};
+
+T <span style="color: #0066BB; font-weight: bold">sq</span> (pt p){
+    <span style="color: #008800; font-weight: bold">return</span> p.x <span style="color: #333333">*</span> p.x <span style="color: #333333">+</span> p.y <span style="color: #333333">*</span> p.y;
+}
+
+T <span style="color: #0066BB; font-weight: bold">cross</span> (pt v, pt w){
+    <span style="color: #008800; font-weight: bold">return</span> v.x <span style="color: #333333">*</span> w.y <span style="color: #333333">-</span> v.y <span style="color: #333333">*</span> w.x;
+}
+
+T <span style="color: #0066BB; font-weight: bold">orient</span> (pt a, pt b, pt c){
+    <span style="color: #008800; font-weight: bold">return</span> cross (b <span style="color: #333333">-</span> a, c <span style="color: #333333">-</span> a);
+}
+
+vector <span style="color: #333333">&lt;</span>pt<span style="color: #333333">&gt;</span> v;
+
+<span style="color: #333399; font-weight: bold">int</span> <span style="color: #0066BB; font-weight: bold">main</span>(){
+<span style="color: #888888">//    freopen (&quot;in.txt&quot;, &quot;r&quot;, stdin);</span>
+    pt t;
+    <span style="color: #333399; font-weight: bold">double</span> r;
+    <span style="color: #333399; font-weight: bold">int</span> X, Y;
+    <span style="color: #008800; font-weight: bold">while</span> (scanf(<span style="background-color: #fff0f0">&quot;%d %d %lf&quot;</span>, <span style="color: #333333">&amp;</span>X, <span style="color: #333333">&amp;</span>Y, <span style="color: #333333">&amp;</span>r)){
+        <span style="color: #008800; font-weight: bold">if</span> (r <span style="color: #333333">&lt;</span> <span style="color: #6600EE; font-weight: bold">0.0</span>) <span style="color: #008800; font-weight: bold">break</span>;
+        t.x <span style="color: #333333">=</span> X;
+        t.y <span style="color: #333333">=</span> Y;
+        v.clear();
+        <span style="color: #333399; font-weight: bold">int</span> n;
+        scanf(<span style="background-color: #fff0f0">&quot;%d&quot;</span>, <span style="color: #333333">&amp;</span>n);
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> n; i<span style="color: #333333">++</span>){
+            scanf(<span style="background-color: #fff0f0">&quot;%d %d&quot;</span>, <span style="color: #333333">&amp;</span>X, <span style="color: #333333">&amp;</span>Y);
+            v.push_back (pt (X, Y));
+        }
+        <span style="color: #333399; font-weight: bold">int</span> maxi <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+        <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>, sz <span style="color: #333333">=</span> v.size(); i <span style="color: #333333">&lt;</span> sz; i<span style="color: #333333">++</span>){
+            pt a <span style="color: #333333">=</span> v[i];
+            <span style="color: #333399; font-weight: bold">int</span> cnt <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+            <span style="color: #008800; font-weight: bold">if</span> (sq (t <span style="color: #333333">-</span> a) <span style="color: #333333">&lt;=</span> r <span style="color: #333333">*</span> r) cnt <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>;
+            <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">int</span> j <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; j <span style="color: #333333">&lt;</span> sz; j<span style="color: #333333">++</span>){
+                <span style="color: #008800; font-weight: bold">if</span> (j <span style="color: #333333">==</span> i) <span style="color: #008800; font-weight: bold">continue</span>;
+                <span style="color: #008800; font-weight: bold">if</span> (orient (t, a, v[j]) <span style="color: #333333">&gt;=</span> <span style="color: #0000DD; font-weight: bold">0</span> and (sq (t <span style="color: #333333">-</span> v[j])) <span style="color: #333333">&lt;=</span> r <span style="color: #333333">*</span> r) cnt<span style="color: #333333">++</span>;
+            }
+            maxi <span style="color: #333333">=</span> max (maxi, cnt);
+        }
+        printf (<span style="background-color: #fff0f0">&quot;%d</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>, maxi);
+    }
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+}
+</pre></div>
+
+		
+		</div>
+		<script>
+		show = false;
+		function p1106() {
+			show = !show;
+			if (show)
+				document.getElementById('p1106').style.display = "block";
+			else
+				document.getElementById('p1106').style.display = "none";
+		}
+		</script>
+		</div>
+	</div>
+</div>
