@@ -1,7 +1,7 @@
 				<!-- post 1066-->
 				<div class="post">
 	<h2 class="title">POJ 1066 - Treasure Hunt</h2>
-	<p class="meta"><span class="date">১৭ মে, ২০১৯</span></p>
+	<p class="meta"><span class="date">১৯ মে, ২০১৯</span></p>
 	<div class="entry">
 		<p class="links"><a href="http://poj.org/problem?id=1066" target="_blank">প্রবলেম লিংক</a></p>
 		<p>হিন্ট</p>
